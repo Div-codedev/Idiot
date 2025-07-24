@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      /* Light Sky Theme Colors */
+      --sky-light: #E3F2FD;
+      --sky-medium: #BBDEFB;
+      --sky-deep: #90CAF9;
+      --sky-blue: #64B5F6;
+      --sky-dark: #42A5F5;
+      
+      /* Krishna Theme Colors */
+      --krishna-blue: #1976D2;
+      --krishna-gold: #FFB300;
+      --peacock-green: #4CAF50;
+      --lotus-pink: #E91E63;
+      --divine-glow: rgba(255, 193, 7, 0.3);
+      
+      /* Light Theme Colors */
+      --surface: #FFFFFF;
+      --on-surface: #1A1A1A;
+      --surface-variant: #F5F5F5;
+      --on-surface-variant: #424242;
+      --outline: #757575;
+      --outline-variant: #E0E0E0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      
+      /* Elevation Shadows */
+      --elevation-1: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.12);
+      --elevation-3: 0 8px 16px rgba(0, 0, 0, 0.14);
+      --elevation-4: 0 12px 24px rgba(0, 0, 0, 0.16);
+      --elevation-5: 0 16px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, 
+        #E3F2FD 0%, 
+        #BBDEFB 25%, 
+        #90CAF9 50%, 
+        #64B5F6 75%, 
+        #42A5F5 100%);
+      background-size: 400% 400%;
+      animation: skyGradient 25s ease infinite;
+      font-family: 'Baloo Bhaijaan 2', 'Tiro Devanagari Hindi', sans-serif;
+      color: var(--on-surface);
+      touch-action: manipulation;
+      position: relative;
+    }
+
+    @keyframes skyGradient {
+      0%, 100% { background-position: 0% 50%; }
+      25% { background-position: 100% 50%; }
+      50% { background-position: 100% 100%; }
+      75% { background-position: 0% 100%; }
+    }
+
+    /* Light Sky Background Pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 193, 7, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 70%, rgba(76, 175, 80, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Picture Holders */
+    .picture-holder {
+      position: fixed;
+      width: 100px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .picture-holder img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 15px;
+    }
+
+    .picture-holder.top-left {
+      top: 80px;
+      left: 60px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .picture-holder.top-right {
+      top: 80px;
+      right: 60px;
+      animation: float 3s ease-in-out infinite reverse;
+    }
+
+    .picture-holder.bottom-left {
+      bottom: 80px;
+      left: 60px;
+      animation: float 3s ease-in-out infinite 1s;
+    }
+
+    .picture-holder.bottom-right {
+      bottom: 80px;
+      right: 60px;
+      animation: float 3s ease-in-out infinite 1.5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Floating Lotus Petals */
+    .lotus-petal {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(45deg, var(--lotus-pink), #F06292);
+      border-radius: 50% 0 50% 0;
+      opacity: 0.7;
+      animation: floatPetal 18s infinite ease-in-out;
+      z-index: 2;
+    }
+
+    @keyframes floatPetal {
+      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      50% { transform: translateY(-20vh) rotate(180deg); opacity: 0.7; }
+      90% { opacity: 0.5; }
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: clamp(1rem, 3vw, 2rem);
+      text-align: center;
+    }
+
+    .main-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: var(--elevation-4);
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      max-width: 480px;
+      width: 88%;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--krishna-blue), var(--peacock-green), var(--krishna-gold));
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+
+    .divine-icon {
+      font-size: 3rem;
+      margin-bottom: 0.8rem;
+      animation: pulse 2s ease-in-out infinite;
+      text-shadow: 0 0 20px rgba(255, 179, 0, 0.5);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.9; }
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      background: linear-gradient(135deg, var(--krishna-blue), var(--peacock-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      animation: titleGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes titleGlow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(25, 118, 210, 0.4)); }
+      50% { filter: drop-shadow(0 0 16px rgba(25, 118, 210, 0.6)); }
+    }
+
+    .blessing-text {
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+      line-height: 1.5;
+      color: var(--on-surface-variant);
+      margin-bottom: 1rem;
+      font-style: italic;
+      position: relative;
+      text-align: center;
+    }
+
+    .blessing-text::before,
+    .blessing-text::after {
+      content: '"';
+      font-size: 2rem;
+      color: var(--krishna-gold);
+      position: absolute;
+      opacity: 0.7;
+    }
+
+    .blessing-text::before {
+      top: -10px;
+      left: -15px;
+    }
+
+    .blessing-text::after {
+      bottom: -15px;
+      right: -10px;
+    }
+
+    .hindi-text {
+      font-size: clamp(0.9rem, 2.2vw, 1rem);
+      line-height: 1.5;
+      color: var(--krishna-blue);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      font-family: 'Tiro Devanagari Hindi', sans-serif;
+    }
+
+    .action-button {
+      background: linear-gradient(135deg, var(--krishna-blue), var(--peacock-green));
+      color: white;
+      font-size: clamp(0.9rem, 2.2vw, 1rem);
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      padding: 0.8rem 2rem;
+      cursor: pointer;
+      box-shadow: var(--elevation-3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: capitalize;
+      letter-spacing: 0.3px;
+    }
+
+    .action-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .action-button:hover::before {
+      left: 100%;
+    }
+
+    .action-button:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--elevation-4);
+    }
+
+    .action-button:active {
+      transform: translateY(0);
+    }
+
+    .floating-elements {
+      position: fixed;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .krishna-symbol {
+      position: absolute;
+      font-size: 1.8rem;
+      opacity: 0.8;
+      animation: floatSymbol 12s infinite ease-in-out;
+      color: var(--krishna-gold);
+      text-shadow: 0 0 15px rgba(255, 179, 0, 0.6);
+    }
+
+    @keyframes floatSymbol {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-25px) rotate(120deg); }
+      66% { transform: translateY(15px) rotate(240deg); }
+    }
+
+    .sparkle-particle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #FFD700, transparent);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkleFloat 1.5s ease-out forwards;
+      z-index: 15;
+    }
+
+    @keyframes sparkleFloat {
+      0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(2) rotate(180deg);
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .stage-indicator {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 50px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: var(--on-surface-variant);
+      box-shadow: var(--elevation-2);
+      z-index: 20;
+      border: 1px solid rgba(25, 118, 210, 0.2);
+    }
+
+    /* Cloud decorations */
+    .cloud {
+      position: fixed;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50px;
+      opacity: 0.6;
+      animation: cloudFloat 20s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    .cloud::before,
+    .cloud::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50px;
+    }
+
+    .cloud1 {
+      width: 100px;
+      height: 40px;
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .cloud1::before {
+      width: 50px;
+      height: 50px;
+      top: -25px;
+      left: 10px;
+    }
+
+    .cloud1::after {
+      width: 60px;
+      height: 20px;
+      top: -10px;
+      right: 10px;
+    }
+
+    .cloud2 {
+      width: 80px;
+      height: 30px;
+      top: 60%;
+      right: 15%;
+      animation-delay: -10s;
+    }
+
+    .cloud2::before {
+      width: 40px;
+      height: 40px;
+      top: -20px;
+      left: 15px;
+    }
+
+    .cloud2::after {
+      width: 50px;
+      height: 15px;
+      top: -5px;
+      right: 15px;
+    }
+
+    @keyframes cloudFloat {
+      0%, 100% { transform: translateX(0px); }
+      50% { transform: translateX(30px); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-card {
+        padding: 1.2rem;
+        border-radius: 20px;
+        width: 92%;
+      }
+      
+      .stage-indicator {
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.8rem;
+      }
+      
+      .picture-holder {
+        width: 70px;
+        height: 85px;
+      }
+      
+      .picture-holder.top-left {
+        top: 60px;
+        left: 40px;
+      }
+      
+      .picture-holder.top-right {
+        top: 60px;
+        right: 40px;
+      }
+      
+      .picture-holder.bottom-left {
+        bottom: 60px;
+        left: 40px;
+      }
+      
+      .picture-holder.bottom-right {
+        bottom: 60px;
+        right: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-card {
+        width: 95%;
+        padding: 1rem;
+      }
+      
+      .blessing-text::before,
+      .blessing-text::after {
+        font-size: 1.5rem;
+      }
+      
+      .blessing-text::before {
+        top: -8px;
+        left: -12px;
+      }
+      
+      .blessing-text::after {
+        bottom: -12px;
+        right: -8px;
+      }
+      
+      .picture-holder {
+        width: 60px;
+        height: 90px;
+      }
+      
+      .picture-holder.top-left {
+        top: 40px;
+        left: 20px;
+      }
+      
+      .picture-holder.top-right {
+        top: 40px;
+        right: 20px;
+      }
+      
+      .picture-holder.bottom-left {
+        bottom: 40px;
+        left: 20px;
+      }
+      
+      .picture-holder.bottom-right {
+        bottom: 40px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Picture Holders -->
+  <div class="picture-holder top-right">
+    <img src="https://lh3.googleusercontent.com/pw/AP1GczOToy90WjN2xKvYpu7iTLAz-N1VfzFB2fcNCelfPu6CCdJAywZIIP_hhduGVJ3IsmA9XV2HgOhP0-88oXvp8kvxjFUrS5jZSxppJm6UaDxrQio6FdrV0U8XOh-FNBbaJM3JunDN1d4yBaee6eZpHA6V=w227-h287-s-no-gm?authuser=0" alt="Krishna">
+  </div>
+  <div class="picture-holder top-left">
+    <img src="https://lh3.googleusercontent.com/pw/AP1GczNPku8roZoztChiblIhnw9Ppx31jwZjkXDLW1-23AGVMBGJ5eK0UgwDnw4FmzFASseKFdRxIcHhCrw9qqyJxo2LRr0mi1__vPPCm_eKjiUuGDkqW6e8clOlbXqMgvw7vTOBVS6XPluPCKlD9LTqGbxw=w231-h365-s-no-gm?authuser=0" alt="Krishna">
+  </div>
+  <div class="picture-holder bottom-left">
+    <img src="https://lh3.googleusercontent.com/pw/AP1GczNHv7_MwJztdTPUoRHmMZx9XB2-oMSXVFadXu41mBQsrJY8lsyO33tx5w7eX8RhfQnDh3mpCPyX8t-NIHXIL0aO8qnj8hAUko_rLDusCIbwSyHkkwMxtc5bMY9QrOmTvjbH_Szqf1vWLWHFNwkFL2Le=w225-h381-s-no-gm?authuser=0" alt="Krishna">
+  </div>
+  <div class="picture-holder bottom-right">
+    <img src="https://lh3.googleusercontent.com/pw/AP1GczOHb1tR5Dc9mQ5vEXvfDd51oAdHjHlDbXc1duw1bp7lOt1qRRJeFyelCjCo0rnruuDAzlfwrBZfp8vY8MWWNjLnF46kmerKMIExj6SsKjkuBzqUbzbJ_uJoEpUnnuuzKjzZe_5zBlOXCoMusxSvm5I_=w254-h277-s-no-gm?authuser=0" alt="Krishna">
+  </div>
+
+  <!-- Stage Indicator -->
+  <div class="stage-indicator">
+    <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">auto_awesome</span>
+    Stage 1 of 3
+  </div>
+
+  <!-- Cloud Decorations -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+
+  <!-- Floating Elements Container -->
+  <div class="floating-elements" id="floatingElements"></div>
+
+  <main>
+    <div class="main-card">
+      <div class="divine-icon">🎁</div>
+      <h1>Divine Birthday Blessings</h1>
+      <p class="blessing-text">May Krishna's melodious flute awaken the divine joy within your heart, and may this special day bring you closer to eternal bliss and spiritual fulfillment.</p>
+      <button class="action-button" onclick="nextStage()">
+        <span class="material-icons">play_arrow</span>
+        (❁´◡`❁)
+      </button>
+    </div>
+  </main>
+
+  <script>
+    const krishnaSymbols = ['🪈', '🦚', '🪷', '🕉️', '🌺', '⭐', '🌙', '🦋'];
+    const floatingContainer = document.getElementById('floatingElements');
+    let stageCount = 1;
+  
+    const stageContent = {
+      1: {
+        title: "Divine Birthday Blessings",
+        english: "May Krishna's melodious flute awaken the divine joy within your heart, and may this special day bring you closer to eternal bliss.",
+        button: "(❁´◡`❁)",
+        icon: "🎁",
+        hindi: "भगवान श्रीकृष्ण आपके जीवन को आनंद, शांति और प्रेम से भर दें।"
+      },
+      2: {
+        title: "The Divine Flute Calls",
+        english: "Listen to the sacred melody that echoes through the cosmos, calling all souls to dance in divine harmony.",
+        button: "Continue",
+        icon: "🎶",
+        hindi: "यह बांसुरी की धुन आत्मा को ईश्वर की ओर बुलाती है।"
+      },
+      3: {
+        title: "Eternal Blessings",
+        english: "May your life be filled with the eternal joy of Krishna's love, and may every moment be a celebration of divine grace.",
+        button: "Celebrate",
+        icon: "🎉✨",
+        hindi: "आपका जीवन श्रीकृष्ण के प्रेम से सदैव आनंदित रहे।"
+      }
+    };
+  
+    function updateStage(stageNumber) {
+      const content = stageContent[stageNumber];
+      if (!content) return;
+  
+      document.querySelector('.divine-icon').textContent = content.icon;
+      document.querySelector('.main-card h1').textContent = content.title;
+      document.querySelector('.blessing-text').textContent = content.english;
+      document.querySelector('.action-button').innerHTML = `
+        <span class="material-icons">play_arrow</span> ${content.button}
+      `;
+      document.querySelector('.stage-indicator').innerHTML = `
+        <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">auto_awesome</span> Stage ${stageNumber} of 3
+      `;
+  
+      // If .hindi-text doesn't exist yet, add it
+      if (!document.querySelector('.hindi-text')) {
+        const hindiP = document.createElement("p");
+        hindiP.className = "hindi-text";
+        hindiP.textContent = content.hindi;
+        document.querySelector('.main-card').insertBefore(hindiP, document.querySelector('.action-button'));
+      } else {
+        document.querySelector('.hindi-text').textContent = content.hindi;
+      }
+    }
+  
+    function nextStage() {
+      const button = document.querySelector('.action-button');
+      const card = document.querySelector('.main-card');
+      const stageIndicator = document.querySelector('.stage-indicator');
+  
+      // Animate button press
+      button.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        button.style.transform = 'scale(1)';
+      }, 150);
+  
+      stageCount++;
+  
+      if (stageCount <= 3) {
+        updateStage(stageCount);
+      } else {
+        // Final stage → Show complete
+        card.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+          card.style.transform = 'scale(1)';
+        }, 300);
+  
+        stageIndicator.innerHTML = `
+          <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">check_circle</span> Journey Complete
+        `;
+  
+        button.innerHTML = `<span class="material-icons">arrow_forward</span> \\^o^/`;
+        button.onclick = () => location.href = 'radha_krishna.html';
+      }
+    }
+  
+    function createFloatingSymbols() {
+      for (let i = 0; i < 12; i++) {
+        const symbol = document.createElement('div');
+        symbol.className = 'krishna-symbol';
+        symbol.textContent = krishnaSymbols[Math.floor(Math.random() * krishnaSymbols.length)];
+        symbol.style.left = Math.random() * 100 + 'vw';
+        symbol.style.top = Math.random() * 100 + 'vh';
+        symbol.style.animationDelay = Math.random() * 12 + 's';
+        symbol.style.animationDuration = (8 + Math.random() * 8) + 's';
+        floatingContainer.appendChild(symbol);
+      }
+    }
+  
+    function createLotusPetals() {
+      for (let i = 0; i < 6; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'lotus-petal';
+        petal.style.left = Math.random() * 100 + 'vw';
+        petal.style.animationDelay = Math.random() * 18 + 's';
+        petal.style.animationDuration = (15 + Math.random() * 6) + 's';
+        document.body.appendChild(petal);
+      }
+    }
+  
+    function createSparkle(x, y) {
+      for (let i = 0; i < 6; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle-particle';
+        sparkle.style.left = (x + (Math.random() - 0.5) * 50) + 'px';
+        sparkle.style.top = (y + (Math.random() - 0.5) * 50) + 'px';
+        sparkle.style.animationDelay = (Math.random() * 0.3) + 's';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1500);
+      }
+    }
+  
+    document.addEventListener('click', (e) => {
+      createSparkle(e.clientX, e.clientY);
+  
+      const ripple = document.createElement('div');
+      ripple.style.position = 'fixed';
+      ripple.style.left = e.clientX + 'px';
+      ripple.style.top = e.clientY + 'px';
+      ripple.style.width = '0px';
+      ripple.style.height = '0px';
+      ripple.style.background = 'rgba(255, 179, 0, 0.4)';
+      ripple.style.borderRadius = '50%';
+      ripple.style.transform = 'translate(-50%, -50%)';
+      ripple.style.animation = 'rippleExpand 0.8s ease-out';
+      ripple.style.pointerEvents = 'none';
+      ripple.style.zIndex = '100';
+      document.body.appendChild(ripple);
+  
+      setTimeout(() => ripple.remove(), 800);
+    });
+  
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        createSparkle(touch.clientX, touch.clientY);
+      }
+    });
+  
+    // Add ripple animation CSS
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+      @keyframes rippleExpand {
+        from { width: 0px; height: 0px; opacity: 0.6; }
+        to { width: 120px; height: 120px; opacity: 0; }
+      }
+    `;
+    document.head.appendChild(rippleStyle);
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      updateStage(stageCount);
+      createFloatingSymbols();
+      createLotusPetals();
+      setInterval(createFloatingSymbols, 35000);
+      setInterval(createLotusPetals, 25000);
+    });
+  
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        nextStage();
+      }
+    });
+  
+    document.querySelector('.action-button').addEventListener('focus', () => {
+      document.querySelector('.main-card').style.outline = '3px solid var(--krishna-blue)';
+    });
+  
+    document.querySelector('.action-button').addEventListener('blur', () => {
+      document.querySelector('.main-card').style.outline = 'none';
+    });
+  </script>
+  
+</body>
+</html>

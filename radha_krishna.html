@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radhe Krishna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            scroll-behavior: smooth;
+            background: linear-gradient(to bottom,
+                #d2dce9 0%,
+                #e8b8d4 25%,
+                #7fa8c9 60%,
+                #567da2 100%);
+            background-attachment: fixed;
+            font-family: 'Georgia', serif;
+            overflow-x: hidden;
+            color: #1f1f1f;
+            /* Hide default scrollbar */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        /* Hide scrollbar for WebKit browsers */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Enhanced floating petals with 3D depth */
+        .petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .petal {
+            position: absolute;
+            width: clamp(8px, 1.5vw, 20px);
+            height: clamp(12px, 2vw, 30px);
+            opacity: 0;
+            animation: floatDramatic 15s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        .petal::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, 
+                rgba(255, 192, 203, 0.9) 0%,
+                rgba(255, 182, 193, 0.6) 50%,
+                rgba(255, 105, 180, 0.3) 100%);
+            border-radius: 50% 50% 50% 0;
+            transform: rotateX(45deg) rotateY(15deg);
+            filter: blur(0.5px);
+            box-shadow: 0 4px 15px rgba(255, 192, 203, 0.4);
+        }
+
+        .petal::after {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.3), 
+                rgba(255, 192, 203, 0.2));
+            border-radius: 50% 50% 50% 0;
+            transform: rotateX(30deg);
+        }
+
+        @keyframes floatDramatic {
+            0% {
+                transform: translateY(-100vh) translateX(0) rotateZ(0deg) scale(0.3);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(50vh) translateX(clamp(-50px, 10vw, 50px)) rotateZ(180deg) scale(1);
+                opacity: 0.9;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(110vh) translateX(clamp(-100px, -20vw, -20px)) rotateZ(360deg) scale(0.1);
+                opacity: 0;
+            }
+        }
+
+        /* Magical light orbs */
+        .light-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .orb {
+            position: absolute;
+            width: clamp(4px, 0.8vw, 12px);
+            height: clamp(4px, 0.8vw, 12px);
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(255, 215, 0, 0.6) 40%,
+                rgba(255, 140, 0, 0.3) 70%,
+                transparent 100%);
+            border-radius: 50%;
+            animation: orbFloat 20s ease-in-out infinite;
+            filter: blur(1px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6),
+                        0 0 40px rgba(255, 140, 0, 0.4);
+        }
+
+        @keyframes orbFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 0;
+            }
+            25% {
+                transform: translate(20vw, 20vh) scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-10vw, 40vh) scale(0.8);
+                opacity: 1;
+            }
+            75% {
+                transform: translate(30vw, 60vh) scale(1.2);
+                opacity: 0.6;
+            }
+        }
+
+        /* Custom Bubble Navigation */
+        .nav-bubbles {
+            position: fixed;
+            right: clamp(1rem, 3vw, 2rem);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.8rem, 2vh, 1.2rem);
+        }
+
+        .nav-bubble {
+            width: clamp(12px, 3vw, 16px);
+            height: clamp(12px, 3vw, 16px);
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%,
+                rgba(255, 255, 255, 0.3),
+                rgba(255, 215, 0, 0.2),
+                transparent);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-bubble::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 40%;
+            height: 40%;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .nav-bubble:hover {
+            transform: scale(1.3);
+            background: radial-gradient(circle at 30% 30%,
+                rgba(255, 255, 255, 0.5),
+                rgba(255, 215, 0, 0.4),
+                rgba(255, 140, 0, 0.2));
+            border-color: rgba(255, 215, 0, 0.8);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .nav-bubble.active {
+            transform: scale(1.4);
+            background: radial-gradient(circle at 30% 30%,
+                rgba(255, 255, 255, 0.7),
+                rgba(255, 215, 0, 0.6),
+                rgba(255, 140, 0, 0.3));
+            border-color: rgba(255, 215, 0, 1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+                        0 0 40px rgba(255, 215, 0, 0.4);
+            animation: bubblePulse 2s ease-in-out infinite;
+        }
+
+        .nav-bubble.active::before {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes bubblePulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+                           0 0 40px rgba(255, 215, 0, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 215, 0, 1),
+                           0 0 60px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        /* Bubble tooltips */
+        .nav-bubble::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: calc(100% + 15px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .nav-bubble:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) translateX(-5px);
+        }
+
+        /* Premium section styles with 3D depth */
+        section {
+            min-height: 100vh;
+            padding: clamp(3rem, 8vh, 6rem) clamp(2rem, 8vw, 8rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(80px) translateZ(-200px) rotateX(10deg);
+            transition: all 1.8s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform, opacity;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center,
+                rgba(255, 255, 255, 0.02) 0%,
+                rgba(255, 255, 255, 0.01) 40%,
+                transparent 70%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0) translateZ(0) rotateX(0deg);
+        }
+
+        section.visible::before {
+            opacity: 1;
+        }
+
+        /* Dramatic image container with 3D effects */
+        .image-container {
+            position: relative;
+            width: clamp(250px, 45vw, 600px);
+            height: clamp(300px, 50vh, 700px);
+            margin-bottom: clamp(2rem, 5vh, 4rem);
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: linear-gradient(45deg,
+                rgba(255, 215, 0, 0.3),
+                rgba(255, 140, 0, 0.2),
+                rgba(255, 69, 0, 0.1),
+                rgba(255, 215, 0, 0.2));
+            border-radius: 2rem;
+            filter: blur(15px);
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: -1;
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        .image-container:hover::before {
+            opacity: 0.8;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { 
+                filter: blur(15px) brightness(1);
+                transform: scale(1);
+            }
+            50% { 
+                filter: blur(20px) brightness(1.2);
+                transform: scale(1.05);
+            }
+        }
+
+        .silhouette {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 1.5rem;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))
+                    drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+
+        section.visible .image-container {
+            animation: imageReveal 2s ease-out forwards;
+        }
+
+        @keyframes imageReveal {
+            0% {
+                transform: rotateY(-90deg) translateZ(-100px);
+                opacity: 0;
+            }
+            50% {
+                transform: rotateY(-20deg) translateZ(-20px);
+                opacity: 0.7;
+            }
+            100% {
+                transform: rotateY(0deg) translateZ(0px);
+                opacity: 1;
+            }
+        }
+
+        .image-container:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.02);
+        }
+
+        .image-container:hover .silhouette {
+            filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6))
+                    drop-shadow(0 0 30px rgba(255, 215, 0, 0.3));
+        }
+
+        /* Typography with dramatic effects */
+        h2 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            margin-bottom: clamp(1rem, 3vh, 2rem);
+            font-weight: 300;
+            letter-spacing: clamp(2px, 0.5vw, 8px);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px) rotateX(15deg);
+            transition: all 1.5s cubic-bezier(0.23, 1, 0.32, 1) 0.3s;
+            background: linear-gradient(135deg,
+                #ffffff 0%,
+                #ffd700 25%,
+                #ffffff 50%,
+                #ffb347 75%,
+                #ffffff 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 6s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        section.visible h2 {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+        }
+
+        p {
+            max-width: clamp(300px, 70vw, 800px);
+            text-align: center;
+            font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.8s cubic-bezier(0.23, 1, 0.32, 1) 0.6s;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-style: italic;
+            position: relative;
+        }
+
+        section.visible p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Heart particles animation */
+        .heart-particles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 18px;
+            transform: rotate(45deg);
+            animation: heartFloat 8s ease-in-out infinite;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            width: 12px;
+            height: 20px;
+            position: absolute;
+            left: 10px;
+            transform: rotate(-45deg);
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            border-radius: 10px 10px 0 0;
+            transform-origin: 0 100%;
+            opacity: 0.7;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes heartFloat {
+            0%, 100% {
+                transform: rotate(45deg) translate(0, 0) scale(0.5);
+                opacity: 0;
+            }
+            25% {
+                transform: rotate(45deg) translate(-30px, -40px) scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: rotate(45deg) translate(40px, -80px) scale(0.7);
+                opacity: 1;
+            }
+            75% {
+                transform: rotate(45deg) translate(-20px, -120px) scale(1.2);
+                opacity: 0.6;
+            }
+        }
+
+        /* Continue Button */
+        .continue-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(3rem, 8vh, 6rem) clamp(2rem, 8vw, 8rem);
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .continue-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.2),
+                rgba(255, 140, 0, 0.3),
+                rgba(255, 69, 0, 0.2));
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            color: white;
+            padding: clamp(1rem, 3vh, 1.5rem) clamp(2rem, 6vw, 3rem);
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-family: 'Georgia', serif;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .continue-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent);
+            transition: left 0.6s ease;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: rgba(255, 215, 0, 1);
+            box-shadow: 0 20px 50px rgba(255, 215, 0, 0.4),
+                        0 0 30px rgba(255, 215, 0, 0.6);
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.3),
+                rgba(255, 140, 0, 0.4),
+                rgba(255, 69, 0, 0.3));
+        }
+
+        .continue-btn:hover::before {
+            left: 100%;
+        }
+
+        .continue-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .continue-message {
+            margin-bottom: 3rem;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            text-align: center;
+            background: linear-gradient(135deg,
+                #ffffff 0%,
+                #ffd700 50%,
+                #ffffff 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+            letter-spacing: 3px;
+            font-weight: 300;
+        }
+
+        /* Scroll indicator with divine animation - kept for first section */
+        .scroll-indicator {
+            position: fixed;
+            bottom: clamp(2rem, 5vh, 4rem);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            opacity: 0.8;
+            animation: divineGlow 3s ease-in-out infinite;
+            transition: opacity 1s ease;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            display: block;
+            width: 3px;
+            height: 50px;
+            background: linear-gradient(to bottom,
+                transparent 0%,
+                rgba(255, 215, 0, 0.8) 30%,
+                rgba(255, 255, 255, 1) 50%,
+                rgba(255, 215, 0, 0.8) 70%,
+                transparent 100%);
+            margin: 0 auto 15px;
+            border-radius: 2px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .scroll-indicator::after {
+            content: '↓';
+            display: block;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes divineGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+            }
+            50% { 
+                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.9));
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+        /* Responsive optimizations */
+        @media (max-width: 768px) {
+            .petal { animation-duration: 12s; }
+            .orb { animation-duration: 15s; }
+            section { padding: clamp(2rem, 6vh, 4rem) clamp(1rem, 5vw, 3rem); }
+            
+            .nav-bubbles {
+                right: 1rem;
+                gap: 0.8rem;
+            }
+            
+            .nav-bubble {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .nav-bubble::after {
+                display: none;
+            }
+        }
+
+        /* Performance hints */
+        .silhouette,
+        .image-container,
+        .petal,
+        .orb,
+        section {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced floating petals -->
+    <div class="petals" id="petalsContainer"></div>
+
+    <!-- Magical light orbs -->
+    <div class="light-orbs" id="orbsContainer"></div>
+
+    <!-- Custom Navigation Bubbles -->
+    <div class="nav-bubbles">
+        <div class="nav-bubble" data-section="krishna" data-tooltip="The Birth of Melody"></div>
+        <div class="nav-bubble" data-section="radha" data-tooltip="The Lotus Awakens"></div>
+        <div class="nav-bubble" data-section="union" data-tooltip="The Divine Dance"></div>
+        <div class="nav-bubble" data-section="eternal" data-tooltip="Beyond the Scroll"></div>
+        <div class="nav-bubble" data-section="continue" data-tooltip="Continue Journey"></div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator"></div>
+
+    <!-- Sections with placeholder images -->
+    <section id="krishna">
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 0s;"></div>
+            <div class="heart" style="animation-delay: 2s;"></div>
+            <div class="heart" style="animation-delay: 4s;"></div>
+        </div>
+        <div class="image-container">
+            <img class="silhouette" src="krishna1.png" alt="Krishna Silhouette">
+        </div>
+        <h2>The Birth of Melody</h2>
+        <p>Krishna stands with his flute, the world around him dancing to his silent tune. His shadow shapes time itself, weaving melodies that awaken the sleeping cosmos.</p>
+    </section>
+
+    <section id="radha">
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 1s;"></div>
+            <div class="heart" style="animation-delay: 3s;"></div>
+            <div class="heart" style="animation-delay: 5s;"></div>
+        </div>
+        <div class="image-container">
+            <img class="silhouette" src="radha.png" alt="Radha Silhouette">
+        </div>
+        <h2>The Lotus Awakens</h2>
+        <p>Radha appears with divine grace, each petal falling in reverence to her presence. Her soul dances to Krishna's melody, creating ripples across the fabric of existence.</p>
+    </section>
+
+    <section id="union">
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 0.5s;"></div>
+            <div class="heart" style="animation-delay: 2.5s;"></div>
+            <div class="heart" style="animation-delay: 4.5s;"></div>
+        </div>
+        <div class="image-container">
+            <img class="silhouette" src="radhekrishna.png" alt="Divine Dance">
+        </div>
+        <h2>The Divine Dance</h2>
+        <p>Two souls merge into one eternal rhythm. Their dance transcends mortal understanding, each step a prayer, each movement painting love across the infinite canvas of time.</p>
+    </section>
+
+    <section id="eternal">
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 1.5s;"></div>
+            <div class="heart" style="animation-delay: 3.5s;"></div>
+            <div class="heart" style="animation-delay: 5.5s;"></div>
+        </div>
+        <div class="image-container">
+            <img class="silhouette" src="jhula.png" alt="Eternal Bond">
+        </div>
+        <h2>Beyond the Scroll</h2>
+        <p>As this journey ends, their eternal story continues. Love, like the breath of the universe, flows endlessly—never asking to be seen, only felt in the depths of every awakened heart.</p>
+    </section>
+
+    <!-- Continue Section -->
+    <section id="continue" class="continue-section">
+        <div class="continue-message">Journey Continues...</div>
+        <button class="continue-btn" onclick="handleContinue()">Continue</button>
+    </section>
+
+    <script>
+        class DivineLoveExperience {
+            constructor() {
+                this.sections = document.querySelectorAll('section');
+                this.petalsContainer = document.getElementById('petalsContainer');
+                this.orbsContainer = document.getElementById('orbsContainer');
+                this.scrollIndicator = document.querySelector('.scroll-indicator');
+                this.navBubbles = document.querySelectorAll('.nav-bubble');
+                
+                this.init();
+            }
+
+            init() {
+                this.createPetals();
+                this.createOrbs();
+                this.setupScrollAnimations();
+                this.setupNavigation();
+                this.hideScrollIndicator();
+                this.addImageLoadEffects();
+            }
+
+            createPetals() {
+                const petalCount = window.innerWidth < 768 ? 25 : 40;
+                
+                for (let i = 0; i < petalCount; i++) {
+                    const petal = document.createElement('div');
+                    petal.className = 'petal';
+                    petal.style.left = Math.random() * 100 + '%';
+                    petal.style.animationDelay = Math.random() * 15 + 's';
+                    petal.style.animationDuration = (12 + Math.random() * 8) + 's';
+                    this.petalsContainer.appendChild(petal);
+                }
+            }
+
+            createOrbs() {
+                const orbCount = window.innerWidth < 768 ? 8 : 15;
+                
+                for (let i = 0; i < orbCount; i++) {
+                    const orb = document.createElement('div');
+                    orb.className = 'orb';
+                    orb.style.left = Math.random() * 100 + '%';
+                    orb.style.top = Math.random() * 100 + '%';
+                    orb.style.animationDelay = Math.random() * 20 + 's';
+                    orb.style.animationDuration = (15 + Math.random() * 10) + 's';
+                    this.orbsContainer.appendChild(orb);
+                }
+            }
+
+            setupNavigation() {
+                this.navBubbles.forEach(bubble => {
+                    bubble.addEventListener('click', () => {
+                        const targetSection = bubble.getAttribute('data-section');
+                        const section = document.getElementById(targetSection);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+
+                // Update active bubble on scroll
+                window.addEventListener('scroll', () => {
+                    const scrollPosition = window.pageYOffset + window.innerHeight / 2;
+                    
+                    this.sections.forEach((section, index) => {
+                        const sectionTop = section.offsetTop;
+                        const sectionBottom = sectionTop + section.offsetHeight;
+                        
+                        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                            this.navBubbles.forEach(bubble => bubble.classList.remove('active'));
+                            if (this.navBubbles[index]) {
+                                this.navBubbles[index].classList.add('active');
+                            }
+                        }
+                    });
+                }, { passive: true });
+            }
+
+            setupScrollAnimations() {
+                const observerOptions = {
+                    threshold: 0.2,
+                    rootMargin: '0px 0px -10% 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            
+                            // Add staggered animations for child elements
+                            setTimeout(() => {
+                                this.triggerHeartAnimation(entry.target);
+                            }, 800);
+                        }
+                    });
+                }, observerOptions);
+
+                this.sections.forEach(section => {
+                    observer.observe(section);
+                });
+            }
+
+            triggerHeartAnimation(section) {
+                const hearts = section.querySelectorAll('.heart');
+                hearts.forEach((heart, index) => {
+                    setTimeout(() => {
+                        heart.style.animationPlayState = 'running';
+                    }, index * 200);
+                });
+            }
+
+            hideScrollIndicator() {
+                let hasScrolled = false;
+                window.addEventListener('scroll', () => {
+                    if (!hasScrolled && window.pageYOffset > 100) {
+                        this.scrollIndicator.style.opacity = '0';
+                        hasScrolled = true;
+                    }
+                }, { passive: true });
+            }
+
+            addImageLoadEffects() {
+                const images = document.querySelectorAll('.silhouette');
+                images.forEach(img => {
+                    img.addEventListener('load', () => {
+                        img.style.filter += ' sepia(20%) saturate(150%)';
+                    });
+                });
+            }
+        }
+
+        // Continue button functionality
+        function handleContinue() {
+            window.location.href = 'polaroidWall.html';
+        }
+
+        // Initialize the experience
+        document.addEventListener('DOMContentLoaded', () => {
+            new DivineLoveExperience();
+        });
+
+        // Performance optimization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preload critical elements
+            const criticalElements = document.querySelectorAll('section, .image-container, .silhouette');
+            criticalElements.forEach(el => {
+                el.style.transform = 'translateZ(0)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #3e6f64;
+      --glass: rgba(255, 255, 255, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e0f7fa, #ffffff, #dceef2);
+      background-size: 400% 400%;
+      animation: gradientShift 30s ease infinite;
+      font-family: 'Baloo Bhaijaan 2', 'Tiro Devanagari Hindi', sans-serif;
+      color: #1c1c1c;
+      touch-action: manipulation;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: clamp(1rem, 3vw, 2rem);
+      text-align: center;
+    }
+
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border-radius: 2rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      padding: clamp(1.5rem, 4vw, 3rem);
+      max-width: 480px;
+      width: 90%;
+      transition: all 0.3s ease;
+      z-index: 3;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      opacity: 0.85;
+    }
+
+    button {
+      margin-top: 2rem;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+      border: none;
+      border-radius: 100px;
+      padding: 0.8rem 2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      background: #30574e;
+      transform: scale(1.02);
+    }
+
+    .floater {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform;
+      opacity: 0.8;
+      z-index: 1;
+      transform-origin: center;
+    }
+
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #ffffffcc, transparent);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 0.8s ease-out forwards;
+      z-index: 5;
+    }
+
+    @keyframes sparkle {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1>On this divine day…</h1>
+      <p>…may Krishna’s flute guide your heart to peace, love, and a joyful birthday journey.</p>
+      <button onclick="location.href='kanhaji.html'">Begin the Divine Journey</button>
+    </div>
+  </main>
+
+  <script>
+    const urls = [
+      "https://cdni.iconscout.com/illustration/premium/thumb/pots-and-feathers-indian-holiday-illustration-download-in-svg-png-gif-file-formats--pongal-peacock-feather-krishna-pack-culture-religion-festivals-illustrations-10542407.png",
+      "https://png.pngtree.com/png-vector/20220814/ourmid/pngtree-krishna-flute-png-with-peacock-feather-png-image_6110420.png"
+    ];
+
+    const total = 25;
+    const floaters = [];
+
+    for (let i = 0; i < total; i++) {
+      const img = document.createElement("img");
+      img.src = urls[Math.floor(Math.random() * urls.length)];
+      img.classList.add("floater");
+
+      const size = Math.random() * 40 + 30;
+      img.style.width = `${size}px`;
+      img.style.top = `${Math.random() * 100}vh`;
+      img.style.left = `${Math.random() * 100}vw`;
+      document.body.appendChild(img);
+
+      floaters.push({
+        el: img,
+        angle: Math.random() * 360,
+        speed: 0.2 + Math.random() * 0.4,
+        xOffset: Math.random() * 100,
+        yOffset: Math.random() * 100
+      });
+    }
+
+    function animateFloaters() {
+      floaters.forEach(f => {
+        f.angle += f.speed;
+        const x = Math.sin(f.angle * 0.01) * 10;
+        const y = Math.cos(f.angle * 0.01) * 10;
+        f.el.style.transform = `translate(${x}px, ${y}px) rotate(${f.angle % 360}deg)`;
+      });
+      requestAnimationFrame(animateFloaters);
+    }
+
+    animateFloaters();
+
+    // Sparkle particle
+    function createSparkle(x, y) {
+      const sparkle = document.createElement("div");
+      sparkle.className = "particle";
+      sparkle.style.left = `${x}px`;
+      sparkle.style.top = `${y}px`;
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 800);
+    }
+
+    document.addEventListener("click", e => {
+      createSparkle(e.clientX, e.clientY);
+    });
+
+    document.addEventListener("touchstart", e => {
+      const touch = e.touches[0];
+      if (touch) createSparkle(touch.clientX, touch.clientY);
+    });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Krishna Flute Simulation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at center, #87CEEB 0%, #4682B4 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-family: 'Arial', sans-serif;
+      padding: 20px 0;
+    }
+
+    /* Falling Petals */
+    .petal {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: #FFB6C1;
+      border-radius: 50% 0 50% 0;
+      animation: fall linear infinite;
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .petal::before {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #FFB6C1;
+      border-radius: 50% 0 50% 0;
+      transform: rotate(90deg);
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Mode Selection Screen */
+    .mode-selection {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 60px 40px;
+      box-shadow: 
+        20px 20px 60px rgba(0, 0, 0, 0.1),
+        -20px -20px 60px rgba(255, 255, 255, 0.2),
+        inset 5px 5px 20px rgba(255, 255, 255, 0.1),
+        inset -5px -5px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      z-index: 10;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mode-selection.hidden {
+      transform: scale(0.3) translate(-200%, -200%);
+      opacity: 0;
+    }
+
+    .mode-selection h1 {
+      color: #2C3E50;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .mode-buttons {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mode-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 20px;
+      padding: 20px 40px;
+      font-size: 1.3em;
+      color: #2C3E50;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        10px 10px 30px rgba(0, 0, 0, 0.1),
+        -10px -10px 30px rgba(255, 255, 255, 0.2),
+        inset 2px 2px 10px rgba(255, 255, 255, 0.1),
+        inset -2px -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .mode-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        15px 15px 40px rgba(0, 0, 0, 0.15),
+        -15px -15px 40px rgba(255, 255, 255, 0.3);
+    }
+
+    .mode-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Neuromorphic Button (Top-left after selection) */
+    .neuro-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border: none;
+      border-radius: 50px;
+      padding: 15px 25px;
+      font-size: 1em;
+      color: #2C3E50;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        10px 10px 30px rgba(0, 0, 0, 0.1),
+        -10px -10px 30px rgba(255, 255, 255, 0.2),
+        inset 2px 2px 10px rgba(255, 255, 255, 0.1),
+        inset -2px -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .neuro-button.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Main Content Container */
+    .main-content {
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 5;
+    }
+
+    .main-content.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Krishna and Flute Container */
+    .krishna-container {
+      position: relative;
+      width: clamp(300px, 80vw, 600px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 20px 0;
+    }
+
+    .krishna-container.play-mode {
+      transform: scale(1.4) translateY(-8%);
+    }
+
+    .krishna-container.listen-mode {
+      transform: scale(1.1) translateY(-5%);
+    }
+
+    .krishna-image-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .krishna-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 20px;
+      box-shadow: 
+        20px 20px 60px rgba(0, 0, 0, 0.2),
+        -20px -20px 60px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Flute SVG Overlay */
+    .flute-svg-wrapper {
+      position: absolute;
+      top: 24%;
+      left: 55%;
+      transform: translate(-50%, -50%) rotate(-1.4deg);
+      width: 90%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .hole {
+      fill: #222;
+      stroke: #FFD700;
+      stroke-width: 2;
+      cursor: pointer;
+      pointer-events: all;
+      transition: all 0.3s ease;
+    }
+
+    .hole:active {
+      fill: #FFD700;
+      transform: scale(1.1);
+    }
+
+    .flute-body {
+      fill: #8B4513;
+      stroke: #654321;
+      stroke-width: 2;
+    }
+
+    /* Media Controls */
+    .media-controls {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 
+        10px 10px 30px rgba(0, 0, 0, 0.1),
+        -10px -10px 30px rgba(255, 255, 255, 0.2),
+        inset 2px 2px 10px rgba(255, 255, 255, 0.1),
+        inset -2px -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .media-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      color: #2C3E50;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        5px 5px 15px rgba(0, 0, 0, 0.1),
+        -5px -5px 15px rgba(255, 255, 255, 0.2),
+        inset 1px 1px 5px rgba(255, 255, 255, 0.1),
+        inset -1px -1px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .media-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        8px 8px 20px rgba(0, 0, 0, 0.15),
+        -8px -8px 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .media-btn:active {
+      transform: translateY(0);
+    }
+
+    .media-btn.active {
+      background: rgba(255, 215, 0, 0.3);
+      color: #B8860B;
+    }
+
+    /* Volume Control */
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .volume-slider {
+      width: 80px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #FFD700;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #FFD700;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .volume-icon {
+      font-size: 1.1em;
+      color: #2C3E50;
+    }
+
+    /* Continue Button */
+    .continue-btn {
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 25px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      color: #2C3E50;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        10px 10px 30px rgba(0, 0, 0, 0.1),
+        -10px -10px 30px rgba(255, 255, 255, 0.2),
+        inset 2px 2px 10px rgba(255, 255, 255, 0.1),
+        inset -2px -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        15px 15px 40px rgba(0, 0, 0, 0.15),
+        -15px -15px 40px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .mode-selection {
+        padding: 40px 20px;
+        margin: 20px;
+      }
+      
+      .mode-selection h1 {
+        font-size: 2em;
+      }
+      
+      .mode-buttons {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .krishna-container.play-mode {
+        transform: scale(1.1) translateY(-5%);
+      }
+
+      .media-controls {
+        padding: 15px 20px;
+        gap: 15px;
+      }
+
+      .volume-slider {
+        width: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Falling Petals (generated by JS) -->
+  
+  <!-- Mode Selection Screen -->
+  <div id="modeSelection" class="mode-selection">
+    <h1>Krishna Flute</h1>
+    <div class="mode-buttons">
+      <button class="mode-btn" onclick="selectMode('listen')">Listen</button>
+      <button class="mode-btn" onclick="selectMode('play')">Play</button>
+    </div>
+  </div>
+
+  <!-- Neuromorphic Button (appears after selection) -->
+  <button id="neuroButton" class="neuro-button" onclick="showModeSelection()">
+    Mode
+  </button>
+
+  <!-- Main Content -->
+  <div id="mainContent" class="main-content">
+    <div id="krishnaContainer" class="krishna-container">
+      <div class="krishna-image-wrapper">
+        <!-- Krishna silhouette image -->
+        <img src="flute.png" alt="Krishna" class="krishna-img" />
+
+        <!-- Flute SVG overlay -->
+        <div class="flute-svg-wrapper">
+          <svg viewBox="0 0 600 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <g id="flute-body">
+              <!-- Left part of flute -->
+              <rect x="0" y="15" width="212" height="15" rx="5" ry="5" class="flute-body" />
+
+              <!-- Right part of flute (starts after gap) -->
+              <rect x="261" y="15" width="90" height="15" rx="5" ry="5" class="flute-body" />
+
+              <!-- Flute holes -->
+              <circle class="hole" cx="50" cy="22.5" r="6" data-note="C" />
+              <circle class="hole" cx="75" cy="22.5" r="6" data-note="D" />
+              <circle class="hole" cx="100" cy="22.5" r="6" data-note="E" />
+              <circle class="hole" cx="150" cy="22.5" r="6" data-note="F" />
+              <circle class="hole" cx="175" cy="22.5" r="6" data-note="G" />
+              <circle class="hole" cx="200" cy="22.5" r="6" data-note="A" />
+              <circle class="hole" cx="310" cy="22.5" r="6" data-note="B" />
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Media Controls -->
+      <div class="media-controls">
+        <button class="media-btn" id="playPauseBtn" onclick="togglePlayPause()">
+          ▶️
+        </button>
+        <button class="media-btn" onclick="stopAudio()">
+          ⏹️
+        </button>
+        <div class="volume-control">
+          <span class="volume-icon">🔊</span>
+          <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" onchange="changeVolume()">
+        </div>
+      </div>
+
+      <button class="continue-btn" onclick="handleContinue()">Continue</button>
+    </div>
+  </div>
+
+  <script>
+    let currentMode = null;
+    let currentAudio = null;
+    let isPlaying = false;
+    let melodyIndex = 0;
+    let melodyTimeout = null;
+
+    // Audio files mapping
+    const audioFiles = {
+      'C': 'sound/C.mp3',
+      'D': 'sound/D.mp3',
+      'E': 'sound/E.mp3',
+      'F': 'sound/F.mp3',
+      'G': 'sound/G.mp3',
+      'A': 'sound/A.mp3',
+      'B': 'sound/B.mp3'
+    };
+
+    // Preload audio files
+    const audioCache = {};
+    function preloadAudio() {
+      Object.keys(audioFiles).forEach(note => {
+        audioCache[note] = new Audio(audioFiles[note]);
+        audioCache[note].volume = 0.7;
+        audioCache[note].preload = 'auto';
+      });
+    }
+
+    // Play a single note
+    function playNote(note) {
+      if (audioCache[note]) {
+        // Stop current audio if playing
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        
+        currentAudio = audioCache[note];
+        currentAudio.volume = document.getElementById('volumeSlider').value / 100;
+        currentAudio.currentTime = 0;
+        currentAudio.play().catch(e => console.log('Audio play failed:', e));
+      }
+    }
+
+    // Play melody for Listen mode
+    function playMelody() {
+      if (isPlaying) return;
+      
+      isPlaying = true;
+      melodyIndex = 0;
+      document.getElementById('playPauseBtn').innerHTML = '⏸️';
+      document.getElementById('playPauseBtn').classList.add('active');
+      
+      // Simple Krishna-inspired melody
+      const melody = ['C', 'D', 'E', 'F', 'G', 'A', 'G', 'F', 'E', 'D', 'C'];
+      
+      function playNextNote() {
+        if (melodyIndex < melody.length && isPlaying) {
+          playNote(melody[melodyIndex]);
+          melodyIndex++;
+          melodyTimeout = setTimeout(playNextNote, 800);
+        } else {
+          stopMelody();
+        }
+      }
+      
+      playNextNote();
+    }
+
+    // Stop melody
+    function stopMelody() {
+      isPlaying = false;
+      melodyIndex = 0;
+      if (melodyTimeout) {
+        clearTimeout(melodyTimeout);
+        melodyTimeout = null;
+      }
+      document.getElementById('playPauseBtn').innerHTML = '▶️';
+      document.getElementById('playPauseBtn').classList.remove('active');
+    }
+
+    // Toggle play/pause
+    function togglePlayPause() {
+      if (currentMode === 'listen') {
+        if (isPlaying) {
+          stopMelody();
+        } else {
+          playMelody();
+        }
+      } else if (currentMode === 'play') {
+        // In play mode, this button can be used for other functionality
+        console.log('Play/Pause in play mode');
+      }
+    }
+
+    // Stop all audio
+    function stopAudio() {
+      stopMelody();
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+    }
+
+    // Change volume
+    function changeVolume() {
+      const volume = document.getElementById('volumeSlider').value / 100;
+      Object.values(audioCache).forEach(audio => {
+        audio.volume = volume;
+      });
+      if (currentAudio) {
+        currentAudio.volume = volume;
+      }
+    }
+
+    // Create falling petals
+    function createPetals() {
+      for (let i = 0; i < 15; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDelay = Math.random() * 10 + 's';
+        petal.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        document.body.appendChild(petal);
+      }
+    }
+
+    // Mode selection
+    function selectMode(mode) {
+      currentMode = mode;
+      
+      // Hide mode selection with animation
+      const modeSelection = document.getElementById('modeSelection');
+      modeSelection.classList.add('hidden');
+      
+      // Show neuromorphic button
+      setTimeout(() => {
+        document.getElementById('neuroButton').classList.add('visible');
+        document.getElementById('neuroButton').textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+      }, 400);
+      
+      // Show main content
+      setTimeout(() => {
+        document.getElementById('mainContent').classList.add('visible');
+        
+        // Apply mode-specific styling
+        if (mode === 'play') {
+          setTimeout(() => {
+            document.getElementById('krishnaContainer').classList.add('play-mode');
+          }, 500);
+        } else if (mode === 'listen') {
+          setTimeout(() => {
+            document.getElementById('krishnaContainer').classList.add('listen-mode');
+          }, 500);
+        }
+      }, 600);
+    }
+
+    // Show mode selection again
+    function showModeSelection() {
+      stopAudio();
+      document.getElementById('modeSelection').classList.remove('hidden');
+      document.getElementById('neuroButton').classList.remove('visible');
+      document.getElementById('mainContent').classList.remove('visible');
+      document.getElementById('krishnaContainer').classList.remove('play-mode');
+      document.getElementById('krishnaContainer').classList.remove('listen-mode');
+      currentMode = null;
+    }
+
+    // Handle flute hole clicks
+    document.addEventListener('DOMContentLoaded', () => {
+      createPetals();
+      preloadAudio();
+      
+      document.querySelectorAll('.hole').forEach(hole => {
+        hole.addEventListener('click', () => {
+          if (currentMode === 'play') {
+            const note = hole.dataset.note;
+            console.log('Playing note:', note);
+            
+            // Visual feedback
+            hole.style.fill = '#FFD700';
+            setTimeout(() => {
+              hole.style.fill = '#222';
+            }, 200);
+            
+            // Play the note
+            playNote(note);
+          }
+        });
+      });
+    });
+
+    // Continue button handler
+    function handleContinue() {
+      window.location.href = 'polaroidWall.html';
+    }
+
+    // Add more petals periodically
+    setInterval(() => {
+      if (document.querySelectorAll('.petal').length < 20) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDelay = '0s';
+        petal.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        document.body.appendChild(petal);
+        
+        // Remove petal after animation
+        setTimeout(() => {
+          if (petal.parentNode) {
+            petal.parentNode.removeChild(petal);
+          }
+        }, 25000);
+      }
+    }, 3000);
+  </script>
+</body>
+</html>
