@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Modern Parallax Scrapbook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+    }
+
+    /* Animated background blobs */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.4;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .blob1 {
+      width: 35vmin; height: 35vmin;
+      background: linear-gradient(45deg, #1976d2, #42a5f5);
+      top: 15%; left: 10%;
+      animation: float1 25s ease-in-out infinite;
+    }
+    
+    .blob2 {
+      width: 45vmin; height: 45vmin;
+      background: linear-gradient(45deg, #0d47a1, #1e88e5);
+      bottom: 20%; right: 15%;
+      animation: float2 30s ease-in-out infinite;
+    }
+    
+    .blob3 {
+      width: 28vmin; height: 28vmin;
+      background: linear-gradient(45deg, #0277bd, #29b6f6);
+      top: 60%; left: 70%;
+      animation: float3 35s ease-in-out infinite;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      25% { transform: translate(15px, -20px) scale(1.1) rotate(90deg); }
+      50% { transform: translate(30px, 10px) scale(0.9) rotate(180deg); }
+      75% { transform: translate(-10px, -15px) scale(1.05) rotate(270deg); }
+    }
+
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      33% { transform: translate(-25px, 20px) scale(1.15) rotate(120deg); }
+      66% { transform: translate(20px, -30px) scale(0.85) rotate(240deg); }
+    }
+
+    @keyframes float3 {
+      0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      40% { transform: translate(-20px, -25px) scale(1.2) rotate(144deg); }
+      80% { transform: translate(25px, 15px) scale(0.9) rotate(288deg); }
+    }
+
+    /* Page container */
+    .page {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    /* Glassmorphic container */
+    .glass-container {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 32px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      width: 85vw;
+      max-width: 420px;
+      aspect-ratio: 3 / 4;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease-out 0.3s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .glass-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.05) 50%, 
+        rgba(255, 255, 255, 0.1) 100%);
+      border-radius: 32px;
+      pointer-events: none;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Page headings */
+    .page-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      color: #0d47a1;
+      text-align: center;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out 0.1s forwards;
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 10px rgba(13, 71, 161, 0.3);
+    }
+
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: #1565c0;
+      text-align: center;
+      margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+      font-weight: 400;
+    }
+
+    /* Navigation button */
+    .nav-button {
+      margin-top: 2.5rem;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out 0.5s forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-button::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(25, 118, 210, 0.5);
+    }
+
+    .nav-button:hover::before {
+      left: 100%;
+    }
+
+    .nav-button:active {
+      transform: translateY(0);
+    }
+
+    /* Bubble navigation */
+    .bubble-nav {
+      position: fixed;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 10;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      background: rgba(25, 118, 210, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+    }
+
+    .nav-dot.active {
+      background: #1976d2;
+      transform: scale(1.3);
+      box-shadow: 0 0 15px rgba(25, 118, 210, 0.6);
+    }
+
+    .nav-dot:hover {
+      background: #1976d2;
+      transform: scale(1.2);
+    }
+
+    /* Intro modal */
+    #introModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 71, 161, 0.1);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      animation: modalFadeIn 0.5s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; backdrop-filter: blur(0px); }
+      to { opacity: 1; backdrop-filter: blur(10px); }
+    }
+
+    .modal-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transform: scale(0.9);
+      animation: modalScaleIn 0.5s ease-out 0.2s forwards;
+    }
+
+    @keyframes modalScaleIn {
+      to { transform: scale(1); }
+    }
+
+    .modal-card h3 {
+      font-size: 1.8rem;
+      color: #0d47a1;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .modal-card p {
+      color: #1565c0;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .start-button {
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(25, 118, 210, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .start-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(25, 118, 210, 0.5);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .bubble-nav {
+        right: 20px;
+        padding: 10px 6px;
+      }
+      
+      .glass-container {
+        width: 90vw;
+        max-width: 350px;
+        padding: 20px;
+      }
+      
+      .modal-card {
+        margin: 20px;
+        padding: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-blob blob1"></div>
+  <div class="bg-blob blob2"></div>
+  <div class="bg-blob blob3"></div>
+
+  <!-- Bubble navigation -->
+  <div class="bubble-nav">
+    <div class="nav-dot active" onclick="goToPage(0)"></div>
+    <div class="nav-dot" onclick="goToPage(1)"></div>
+    <div class="nav-dot" onclick="goToPage(2)"></div>
+  </div>
+
+  <!-- Page 1 -->
+  <div class="page active" id="page0">
+    <h1 class="page-title">✨ Memories</h1>
+    <p class="page-subtitle">Explore the magic of parallax storytelling</p>
+    <div class="glass-container">
+      <canvas id="canvas0"></canvas>
+    </div>
+    <button class="nav-button" onclick="goToPage(1)">
+      Next Journey →
+    </button>
+  </div>
+
+  <!-- Page 2 -->
+  <div class="page" id="page1">
+    <h1 class="page-title">🌟 Adventures</h1>
+    <p class="page-subtitle">Dive deeper into the parallax experience</p>
+    <div class="glass-container">
+      <canvas id="canvas1"></canvas>
+    </div>
+    <button class="nav-button" onclick="goToPage(2)">
+      Final Chapter →
+    </button>
+  </div>
+
+  <!-- Page 3 -->
+  <div class="page" id="page2">
+    <h1 class="page-title">💫 Dreams</h1>
+    <p class="page-subtitle">The ultimate parallax revelation</p>
+    <div class="glass-container">
+      <canvas id="canvas2"></canvas>
+    </div>
+    <button class="nav-button" onclick="goToPage(0)">
+      ↻ Start Over
+    </button>
+  </div>
+
+  <!-- Intro modal -->
+  <div id="introModal">
+    <div class="modal-card">
+      <h3>📸 Welcome to Your Scrapbook</h3>
+      <p>Swipe, tilt, or drag inside each frame to experience the magic of 2.5D parallax. Each page tells a unique story through interactive depth.</p>
+      <button class="start-button" onclick="closeModal()">Start Exploring ✨</button>
+    </div>
+  </div>
+
+  <script>
+    // Global functions for onclick handlers
+    function goToPage(pageIndex) {
+      if (pageIndex === window.currentPage) return;
+      
+      const pages = document.querySelectorAll('.page');
+      const navDots = document.querySelectorAll('.nav-dot');
+      
+      // Update active states
+      pages[window.currentPage].classList.remove('active');
+      navDots[window.currentPage].classList.remove('active');
+      
+      window.currentPage = pageIndex;
+      
+      pages[window.currentPage].classList.add('active');
+      navDots[window.currentPage].classList.add('active');
+      
+      // Trigger animations
+      const container = pages[window.currentPage].querySelector('.glass-container');
+      container.style.animation = 'none';
+      container.offsetHeight; // Trigger reflow
+      container.style.animation = 'fadeInUp 1s ease-out forwards';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('introModal');
+      modal.style.animation = 'modalFadeIn 0.3s ease-out reverse';
+      setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    // Make functions globally accessible
+    window.goToPage = goToPage;
+    window.closeModal = closeModal;
+    window.currentPage = 0;
+  </script>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js';
+
+    // Image pairs for each page (main image and depth map)
+    const imagePairs = [
+      {
+        main: 'parxx.png',
+        depth: 'depth.png'
+      },
+      {
+        main: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=1000&fit=crop',
+        depth: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEwMDAiIHZpZXdCb3g9IjAgMCA4MDAgMTAwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxyYWRpYWxHcmFkaWVudCBpZD0iZGVwdGgiIGN4PSI1MCUiIGN5PSI0MCUiIHI9IjYwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KPHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiM4ODg4ODgiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwMDAwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNkZXB0aCkiLz4KPC9zdmc+'
+      },
+      {
+        main: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=1000&fit=crop',
+        depth: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEwMDAiIHZpZXdCb3g9IjAgMCA4MDAgMTAwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZGVwdGgiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+CjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjNjY2NjY2Ii8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzIyMjIyMiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZGVwdGgpIi8+Cjwvc3ZnPg=='
+      }
+    ];
+
+    let currentPage = 0;
+    const pages = document.querySelectorAll('.page');
+    const navDots = document.querySelectorAll('.nav-dot');
+    const scenes = [];
+
+    // Update global reference
+    window.currentPage = currentPage;
+
+    // Page navigation - remove duplicate function since it's now global
+    // Modal controls - remove duplicate function since it's now global
+
+    // Initialize Three.js scenes for each canvas
+    for (let i = 0; i < 3; i++) {
+      const canvas = document.getElementById(`canvas${i}`);
+      const container = canvas.parentElement;
+      
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+      camera.position.z = 1;
+      
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: true
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const resize = () => {
+        const { clientWidth: w, clientHeight: h } = container;
+        renderer.setSize(w, h);
+      };
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Load textures
+      const textureLoader = new THREE.TextureLoader();
+      const loadTextures = async () => {
+        try {
+          const [diffuseMap, depthMap] = await Promise.all([
+            textureLoader.loadAsync(imagePairs[i].main),
+            textureLoader.loadAsync(imagePairs[i].depth),
+          ]);
+
+          [diffuseMap, depthMap].forEach(t => {
+            t.minFilter = THREE.LinearFilter;
+            t.magFilter = THREE.LinearFilter;
+            t.generateMipmaps = false;
+          });
+
+          const material = new THREE.ShaderMaterial({
+            uniforms: {
+              diffuse: { value: diffuseMap },
+              depth: { value: depthMap },
+              uOffset: { value: new THREE.Vector2() },
+            },
+            vertexShader: `
+              varying vec2 vUv;
+              void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+              }
+            `,
+            fragmentShader: `
+              precision highp float;
+              uniform sampler2D diffuse;
+              uniform sampler2D depth;
+              uniform vec2 uOffset;
+              varying vec2 vUv;
+
+              void main() {
+                float depthVal = texture2D(depth, vUv).r;
+                vec2 parallax = (depthVal - 0.5) * uOffset * 0.1;
+                gl_FragColor = texture2D(diffuse, vUv + parallax);
+              }
+            `
+          });
+
+          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+          scene.add(mesh);
+
+          // Interactive controls
+          let targetX = 0, targetY = 0;
+          let state = { x: 0, y: 0 };
+          let lastInteraction = Date.now();
+          const idleAmplitude = 0.12;
+
+          const updateTarget = (x, y, w = container.clientWidth, h = container.clientHeight) => {
+            targetX = (x / w) * 2 - 1;
+            targetY = -(y / h) * 2 + 1;
+          };
+
+          // Mouse/touch interaction
+          const handleMove = (x, y) => {
+            const rect = container.getBoundingClientRect();
+            const relX = x - rect.left;
+            const relY = y - rect.top;
+            if (relX >= 0 && relX <= rect.width && relY >= 0 && relY <= rect.height) {
+              lastInteraction = Date.now();
+              updateTarget(relX, relY, rect.width, rect.height);
+            }
+          };
+
+          container.addEventListener('pointermove', e => handleMove(e.clientX, e.clientY));
+          container.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleMove(touch.clientX, touch.clientY);
+          });
+
+          // Device orientation
+          window.addEventListener('deviceorientation', e => {
+            if (e.beta && e.gamma) {
+              lastInteraction = Date.now();
+              const x = (e.gamma + 90) / 180;
+              const y = (e.beta + 90) / 180;
+              updateTarget(x * window.innerWidth, y * window.innerHeight);
+            }
+          });
+
+          // Animation loop
+          const animate = () => {
+            const now = Date.now();
+            const idleTime = now - lastInteraction;
+            const isIdle = idleTime > 3000;
+
+            state.x += (targetX - state.x) * 0.1;
+            state.y += (targetY - state.y) * 0.1;
+
+            let finalX = state.x;
+            let finalY = state.y;
+
+            if (isIdle) {
+              const t = now * 0.001;
+              finalX = Math.sin(t * 0.4) * idleAmplitude;
+              finalY = Math.cos(t * 0.5) * idleAmplitude * 0.7;
+            }
+
+            const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+            const maxOffset = 0.35;
+            material.uniforms.uOffset.value.set(
+              clamp(finalX, -maxOffset, maxOffset),
+              clamp(finalY, -maxOffset, maxOffset)
+            );
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+          };
+
+          animate();
+
+        } catch (error) {
+          console.warn(`Failed to load textures for canvas ${i}:`, error);
+        }
+      };
+
+      loadTextures();
+      scenes.push({ scene, camera, renderer });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        window.goToPage((window.currentPage + 1) % 3);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        window.goToPage((window.currentPage - 1 + 3) % 3);
+      }
+    });
+  </script>
+</body>
+</html>
